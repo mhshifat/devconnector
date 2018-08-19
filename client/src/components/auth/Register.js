@@ -1,39 +1,57 @@
-import React, { Component } from "react";
-import axios from "axios";
-import classnames from "classnames";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { registerUser } from '../../actions/authActions';
+import TextFieldGroup from '../common/TextFieldGroup';
 
 class Register extends Component {
-  state = {
-    username: "",
-    email: "",
-    password: "",
-    errors: {}
-  };
-
-  onChangeHandler = e => {
-    this.setState({
-      [e.target.name]: e.target.value
-    });
-  };
-
-  onSubmitHandler = e => {
-    e.preventDefault();
-    const newUser = {
-      username: this.state.username,
-      email: this.state.email,
-      password: this.state.password
+  constructor() {
+    super();
+    this.state = {
+      name: '',
+      email: '',
+      password: '',
+      password2: '',
+      errors: {}
     };
-    axios
-      .post("/api/users/register", newUser)
-      .then(res => console.log(res.data))
-      .catch(err =>
-        this.setState({
-          errors: err.response.data
-        })
-      );
-  };
+
+    this.onChange = this.onChange.bind(this);
+    this.onSubmit = this.onSubmit.bind(this);
+  }
+
+  componentDidMount() {
+    if (this.props.auth.isAuthenticated) {
+      this.props.history.push('/dashboard');
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.errors) {
+      this.setState({ errors: nextProps.errors });
+    }
+  }
+
+  onChange(e) {
+    this.setState({ [e.target.name]: e.target.value });
+  }
+
+  onSubmit(e) {
+    e.preventDefault();
+
+    const newUser = {
+      name: this.state.name,
+      email: this.state.email,
+      password: this.state.password,
+      password2: this.state.password2
+    };
+
+    this.props.registerUser(newUser, this.props.history);
+  }
 
   render() {
+    const { errors } = this.state;
+
     return (
       <div className="register">
         <div className="container">
@@ -43,63 +61,39 @@ class Register extends Component {
               <p className="lead text-center">
                 Create your DevConnector account
               </p>
-              <form onSubmit={this.onSubmitHandler}>
-                <div className="form-group">
-                  <input
-                    type="text"
-                    className={classnames("form-control form-control-lg", {
-                      "is-invalid": this.state.errors.username
-                    })}
-                    placeholder="Name"
-                    name="username"
-                    autoFocus
-                    value={this.state.username}
-                    onChange={this.onChangeHandler}
-                  />
-                  {this.state.errors.username && (
-                    <div className="invalid-feedback">
-                      {this.state.errors.username}
-                    </div>
-                  )}
-                </div>
-                <div className="form-group">
-                  <input
-                    type="email"
-                    className={classnames("form-control form-control-lg", {
-                      "is-invalid": this.state.errors.email
-                    })}
-                    placeholder="Email Address"
-                    name="email"
-                    value={this.state.email}
-                    onChange={this.onChangeHandler}
-                  />
-                  {this.state.errors.email && (
-                    <div className="invalid-feedback">
-                      {this.state.errors.email}
-                    </div>
-                  )}
-                  <small className="form-text text-muted">
-                    This site uses Gravatar so if you want a profile image, use
-                    a Gravatar email
-                  </small>
-                </div>
-                <div className="form-group">
-                  <input
-                    type="password"
-                    className={classnames("form-control form-control-lg", {
-                      "is-invalid": this.state.errors.password
-                    })}
-                    placeholder="Password"
-                    name="password"
-                    value={this.state.password}
-                    onChange={this.onChangeHandler}
-                  />
-                  {this.state.errors.password && (
-                    <div className="invalid-feedback">
-                      {this.state.errors.password}
-                    </div>
-                  )}
-                </div>
+              <form noValidate onSubmit={this.onSubmit}>
+                <TextFieldGroup
+                  placeholder="Name"
+                  name="name"
+                  value={this.state.name}
+                  onChange={this.onChange}
+                  error={errors.name}
+                />
+                <TextFieldGroup
+                  placeholder="Email"
+                  name="email"
+                  type="email"
+                  value={this.state.email}
+                  onChange={this.onChange}
+                  error={errors.email}
+                  info="This site uses Gravatar so if you want a profile image, use a Gravatar email"
+                />
+                <TextFieldGroup
+                  placeholder="Password"
+                  name="password"
+                  type="password"
+                  value={this.state.password}
+                  onChange={this.onChange}
+                  error={errors.password}
+                />
+                <TextFieldGroup
+                  placeholder="Confirm Password"
+                  name="password2"
+                  type="password"
+                  value={this.state.password2}
+                  onChange={this.onChange}
+                  error={errors.password2}
+                />
                 <input type="submit" className="btn btn-info btn-block mt-4" />
               </form>
             </div>
@@ -110,4 +104,15 @@ class Register extends Component {
   }
 }
 
-export default Register;
+Register.propTypes = {
+  registerUser: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired,
+  errors: PropTypes.object.isRequired
+};
+
+const mapStateToProps = state => ({
+  auth: state.auth,
+  errors: state.errors
+});
+
+export default connect(mapStateToProps, { registerUser })(withRouter(Register));

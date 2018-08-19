@@ -1,0 +1,3 @@
+export const SAVE_ERRORS_TO_REDUX_STATE = "SAVE_ERRORS_TO_REDUX_STATE";
+export const USER_INFO = "USER_INFO";
+export const LOGOUT = "LOGOUT";

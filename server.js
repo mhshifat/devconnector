@@ -1,50 +1,49 @@
-// Import External Dependencies
-const color = require("colors");
-const express = require("express");
-const passport = require("passport");
-const bodyParser = require("body-parser");
+const express = require('express');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+const passport = require('passport');
+const path = require('path');
 
-// Import Config Variables
-const { port } = require("./config/config");
+const users = require('./routes/api/users');
+const profile = require('./routes/api/profile');
+const posts = require('./routes/api/posts');
 
-// Import App Routes Files
-const usersRoutes = require("./routes/api/users");
-const postsRoutes = require("./routes/api/posts");
-const profilesRoutes = require("./routes/api/profiles");
-
-// Require Database Connection
-require("./database/conn");
-
-// Require Passport
-require("./config/passport")(passport);
-
-// Initialize Express App
 const app = express();
 
-// User Dependencies as Middlewares
-app.use(bodyParser.json());
-app.use(passport.initialize());
+// Body parser middleware
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
-// Setup App Routes
-app.get("/", (req, res) => {
-  res.status(200).json({
-    message: "Homepage"
+// DB Config
+const db = require('./config/keys').mongoURI;
+
+// Connect to MongoDB
+mongoose
+  .connect(db)
+  .then(() => console.log('MongoDB Connected'))
+  .catch(err => console.log(err));
+
+// Passport middleware
+app.use(passport.initialize());
+
+// Passport Config
+require('./config/passport')(passport);
+
+// Use Routes
+app.use('/api/users', users);
+app.use('/api/profile', profile);
+app.use('/api/posts', posts);
+
+// Server static assets if in production
+if (process.env.NODE_ENV === 'production') {
+  // Set static folder
+  app.use(express.static('client/build'));
+
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
   });
-});
+}
 
-// Use Routes as Middleware
-app.use("/api/users", usersRoutes);
-app.use("/api/posts", postsRoutes);
-app.use("/api/profiles", profilesRoutes);
+const port = process.env.PORT || 5000;
 
-// Listening To Port
-app.listen(port, err => {
-  if (err) {
-    console.log(color.red(err));
-  } else {
-    console.log(
-      color.magenta(`==> The server is running on http://localhost:${port}`)
-    );
-  }
-});
+app.listen(port, () => console.log(`Server running on port ${port}`));

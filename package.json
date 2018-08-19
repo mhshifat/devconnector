@@ -1,40 +1,31 @@
 {
   "name": "devconnector",
   "version": "1.0.0",
-  "description": "A MERN stack based social network app for developers",
+  "description": "Social network for developers",
   "main": "server.js",
-  "dependencies": {
-    "bcryptjs": "^2.4.3",
-    "body-parser": "^1.18.3",
-    "classnames": "^2.2.6",
-    "dotenv": "^6.0.0",
-    "express": "^4.16.3",
-    "gravatar": "^1.6.0",
-    "jsonwebtoken": "^8.3.0",
-    "mongoose": "^5.2.9",
-    "passport": "^0.4.0",
-    "passport-jwt": "^4.0.0",
-    "validator": "^10.6.0"
-  },
-  "devDependencies": {
-    "colors": "^1.3.1"
-  },
   "scripts": {
+    "client-install": "npm install --prefix client",
     "start": "node server.js",
     "server": "nodemon server.js",
-    "client-install": "npm install --prefix client",
     "client": "npm start --prefix client",
-    "dev": "npm-run-all --parallel server client"
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/mhshifat/devconnector.git"
+  "author": "Brad Traversy",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.18.2",
+    "concurrently": "^3.5.1",
+    "express": "^4.16.3",
+    "gravatar": "^1.6.0",
+    "jsonwebtoken": "^8.2.0",
+    "mongoose": "^5.0.12",
+    "passport": "^0.4.0",
+    "passport-jwt": "^4.0.0",
+    "validator": "^9.4.1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/mhshifat/devconnector/issues"
-  },
-  "homepage": "https://github.com/mhshifat/devconnector#readme"
+  "devDependencies": {
+    "nodemon": "^1.17.3"
+  }
 }

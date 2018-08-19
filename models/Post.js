@@ -1,11 +1,11 @@
-// Import External Dependencies
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-// Creating a Schema
-const postSchema = new mongoose.Schema({
+// Create Schema
+const PostSchema = new Schema({
   user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User"
+    type: Schema.Types.ObjectId,
+    ref: 'users'
   },
   text: {
     type: String,
@@ -20,16 +20,16 @@ const postSchema = new mongoose.Schema({
   likes: [
     {
       user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
+        type: Schema.Types.ObjectId,
+        ref: 'users'
       }
     }
   ],
   comments: [
     {
       user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
+        type: Schema.Types.ObjectId,
+        ref: 'users'
       },
       text: {
         type: String,
@@ -53,5 +53,4 @@ const postSchema = new mongoose.Schema({
   }
 });
 
-// Export Model
-module.exports = mongoose.model("Post", postSchema);
+module.exports = Post = mongoose.model('post', PostSchema);

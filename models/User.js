@@ -1,27 +1,22 @@
-// Import External Dependencies
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-// Creating a Schema
-const userSchema = new mongoose.Schema({
-  username: {
+// Create Schema
+const UserSchema = new Schema({
+  name: {
     type: String,
-    required: true,
-    trim: true
+    required: true
   },
   email: {
     type: String,
-    required: true,
-    unique: true,
-    trim: true
+    required: true
   },
   password: {
     type: String,
-    required: true,
-    trim: true
+    required: true
   },
   avatar: {
-    type: String,
-    trim: true
+    type: String
   },
   date: {
     type: Date,
@@ -29,5 +24,4 @@ const userSchema = new mongoose.Schema({
   }
 });
 
-// Export Model
-module.exports = mongoose.model("User", userSchema);
+module.exports = User = mongoose.model('users', UserSchema);
